@@ -17,3 +17,8 @@ jobs:
       - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
+
+workflows:
+  full_build:
+    jobs:
+      - win_build
