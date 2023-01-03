@@ -7,7 +7,7 @@ jobs:
   win_build: # name of your job
     executor:
       name: win/default
-      size: 2xlarge
+      size: xlarge
 
     steps:
       - checkout
