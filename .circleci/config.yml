@@ -14,6 +14,7 @@ jobs:
       - run: ./.circleci/install_dependencies_win.ps1
       - run: npm ci
       - run: npm run bootstrap
+      - run: Write-Output $env:vs2022_install
       - run: npm run build -- --target=debug
       - run: npm run build -- --target=release
       - run: npm run package -- --target=debug

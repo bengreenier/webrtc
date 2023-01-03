@@ -10,3 +10,6 @@ Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $env:TEMP\node-install.m
 Start-Process -FilePath "$env:TEMP\git-install.exe" -ArgumentList "/norestart /sp- /verysilent" -Wait
 Start-Process -FilePath "$env:TEMP\vs_buildtools.exe" -ArgumentList "--quiet --wait --norestart --nocache --channelUri $env:TEMP\VisualStudio.chman --installChannelUri $env:TEMP\VisualStudio.chman --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.ATLMFC --add Microsoft.VisualStudio.Component.Windows10SDK.20348 --includeRecommended --installPath C:\BuildTools" -Wait
 Write-Output "Dependencies installed"
+
+[System.Environment]::SetEnvironmentVariable("vs2022_install", "C:\BuildTools")
+Write-Output "Environment variables set"
