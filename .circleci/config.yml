@@ -1,0 +1,19 @@
+version: 2.1 # Use version 2.1 to enable Orb usage.
+
+orbs:
+  win: circleci/windows@5.0 # The Windows orb gives you everything you need to start using the Windows executor.
+
+jobs:
+  win_build: # name of your job
+    executor:
+      name: win/default
+      size: 2xlarge
+
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: npm run build -- --target=debug
+      - run: npm run build -- --target=release
+      - run: npm run package -- --target=debug
+      - run: npm run package -- --target=release

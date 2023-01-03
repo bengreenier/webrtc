@@ -1,0 +1,28 @@
+{
+  "name": "@bengreenier/webrtc",
+  "version": "0.1.0",
+  "description": "Cross-platform builds of WebRTC",
+  "scripts": {
+    "scripts:depot_tools": "node ./scripts/depot_tools.mjs",
+    "scripts:enlistment": "node ./scripts/enlistment.mjs",
+    "scripts:build": "node ./scripts/build.mjs",
+    "scripts:package": "node ./scripts/package.mjs",
+    "bootstrap": "npm run scripts:depot_tools && npm run scripts:enlistment",
+    "build": "npm run scripts:build --",
+    "package": "npm run scripts:package --"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bengreenier/webrtc.git"
+  },
+  "author": "bengreenier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bengreenier/webrtc/issues"
+  },
+  "homepage": "https://github.com/bengreenier/webrtc#readme",
+  "devDependencies": {
+    "extract-zip": "^2.0.1",
+    "zx": "^7.1.1"
+  }
+}
