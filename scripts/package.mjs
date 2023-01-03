@@ -71,6 +71,9 @@ await fs.copy("src/", path.join("out", triplet, "include"), {
 });
 
 // args (cross platform)
-await fs.copy(`src/out/${triplet}/args.gn`, path.join("out", triplet, "/"));
+await fs.copy(
+  `src/out/${triplet}/args.gn`,
+  path.join("out", triplet, "/", "args.gn")
+);
 
 echo(chalk.green(`Packaged successfully.`));
