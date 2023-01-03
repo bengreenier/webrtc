@@ -11,7 +11,7 @@ cd("src");
 
 const args = `is_debug=${target === "debug"}`;
 const triplet = createTriplet(target);
-const [target_os, target_cpu] = triplet;
+const [target_os, target_cpu] = triplet.split("_");
 
 await $`gn gen out/${triplet} --args=${args} --target_cpu=${target_cpu} --target_os=${target_os}`;
 await $`autoninja -C out/${triplet}`;
