@@ -11,6 +11,7 @@ jobs:
 
     steps:
       - checkout
+      - run: ./.circleci/install_dependencies_win.ps1
       - run: npm ci
       - run: npm run bootstrap
       - run: npm run build -- --target=debug
