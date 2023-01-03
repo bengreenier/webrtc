@@ -1,8 +1,8 @@
 #!/usr/bin/env zx
 import "zx/globals";
-import { spinner } from "zx/experimental";
 import {
   createTriplet,
+  maybeSpinner,
   parseTarget,
   setupPlatform,
   vswhere,
@@ -18,7 +18,7 @@ await fs.remove(path.join("out", triplet));
 echo(`Cleaned up.`);
 
 if (process.platform === "win32") {
-  await spinner("Copying windows build output...", async () => {
+  await maybeSpinner("Copying windows build output...", async () => {
     // TODO(bengreenier): is this enough? look at ninja output to see what obj files are a part of this lib
     const mainLib = path.join("src", "out", triplet, "obj", "webrtc.lib");
     await fs.copy(mainLib, path.join("out", triplet, "webrtc.lib"));

@@ -1,4 +1,5 @@
 #!/usr/bin/env zx
+import { spinner } from "zx/experimental";
 import "zx/globals";
 
 /**
@@ -87,4 +88,13 @@ export function parseTarget() {
   }
 
   return target;
+}
+
+export async function maybeSpinner(title, action) {
+  if (typeof process.env["CI"] !== "undefined") {
+    echo(title);
+    await action();
+  } else {
+    await spinner(title, action);
+  }
 }

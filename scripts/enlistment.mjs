@@ -1,7 +1,6 @@
 #!/usr/bin/env zx
 import "zx/globals";
-import { spinner } from "zx/experimental";
-import { setupPlatform } from "./platform.mjs";
+import { setupPlatform, maybeSpinner } from "./platform.mjs";
 
 const cwd = await setupPlatform();
 
@@ -10,7 +9,7 @@ let version = argv["version"];
 
 // obtain the latest version
 if (!version) {
-  await spinner("Obtaining latest version...", async () => {
+  await maybeSpinner("Obtaining latest version...", async () => {
     const res = await fetch(
       `https://chromiumdash.appspot.com/fetch_milestones?only_branched=true`
     );
@@ -62,13 +61,16 @@ if (!hasSrc) {
 
 // ensure correct webrtc version is checked out
 cd(`src`);
-await spinner(`Checking out ${version}`, async () => {
+await maybeSpinner(`Checking out ${version}`, async () => {
   await $`git checkout main`;
   await $`git fetch origin +refs/branch-heads/${version}:refs/heads/branch-heads/${version}`;
   await $`git checkout -f branch-heads/${version}`;
 });
 
-echo(chalk.yellow(`Initial sync will take a while`));
-await spinner("Synchronizing...", () => $`gclient sync`);
+if (!hasSrc) {
+  echo(chalk.yellow(`Initial sync will take a while`));
+}
+
+await maybeSpinner("Synchronizing...", () => $`gclient sync`);
 
 echo(chalk.green("Enlistment updated."));
