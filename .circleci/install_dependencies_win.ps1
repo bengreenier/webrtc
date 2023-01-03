@@ -1,3 +1,7 @@
+
+$ErrorActionPreference = "Stop"
+$ProgressPreference = 'SilentlyContinue'
+
 (New-Object Net.WebClient).DownloadFile("https://nodejs.org/dist/v18.12.1/node-v18.12.1-x64.msi", "$env:TEMP\node-install.msi")
 (New-Object Net.WebClient).DownloadFile("https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe", "$env:TEMP\git-install.exe")
 (New-Object Net.WebClient).DownloadFile("https://aka.ms/vs/17/release/channel", "$env:TEMP\VisualStudio.chman")
