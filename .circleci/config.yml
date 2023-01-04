@@ -61,8 +61,8 @@ jobs:
       - run:
           no_output_timeout: 30m
           command: npm run bootstrap
-      - run: npm run build -- --target=debug --arch=arm
-      - run: npm run build -- --target=release --arch=arm
+      - run: npm run build -- --target=debug --arch=arm64
+      - run: npm run build -- --target=release --arch=arm64
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
 
