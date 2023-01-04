@@ -22,7 +22,7 @@ jobs:
   nix_build:
     machine:
       image: ubuntu-2004:current
-    resource_class: 2xlarge
+    resource_class: xlarge
     steps:
       - checkout
       - run: npm ci
