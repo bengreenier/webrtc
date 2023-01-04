@@ -34,8 +34,40 @@ jobs:
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
 
+  mac_intel_build:
+    macos:
+      xcode: 14.2.0
+    resource_class: large
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: chmod a+x ./.circleci/install_dependencies_nix.sh
+      - run: ./.circleci/install_dependencies_nix.sh
+      - run: npm run build -- --target=debug
+      - run: npm run build -- --target=release
+      - run: npm run package -- --target=debug
+      - run: npm run package -- --target=release
+
+  mac_arm_build:
+    macos:
+      xcode: 14.2.0
+    resource_class: large
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: chmod a+x ./.circleci/install_dependencies_nix.sh
+      - run: ./.circleci/install_dependencies_nix.sh
+      - run: npm run build -- --target=debug --arch=arm
+      - run: npm run build -- --target=release --arch=arm
+      - run: npm run package -- --target=debug
+      - run: npm run package -- --target=release
+
 workflows:
   full_build:
     jobs:
       - win_build
       - nix_build
+      - mac_intel_build
+      - mac_arm_build

@@ -74,6 +74,10 @@ if (process.platform === "win32") {
       fs.copy(extra, path.join("out", triplet, "extras", path.basename(extra)))
     )
   );
+} else if (process.platform === "darwin") {
+  const output = await $`ls -alR src/out`;
+  echo(output);
+  throw new Error("Testing");
 } else {
   throw new Error(`Unsupported platform ${process.platform}`);
 }

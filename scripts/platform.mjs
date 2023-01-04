@@ -66,7 +66,7 @@ export async function vswhere() {
   return path.join(toolsPath, latestTool, "bin", hostPath);
 }
 
-export function createTriplet(target) {
+export function createTriplet(target, arch) {
   const target_os =
     process.platform === "win32"
       ? "win"
@@ -74,7 +74,7 @@ export function createTriplet(target) {
       ? "mac"
       : "linux";
   const target_cpu =
-    os.arch() === "arm64" ? "arm64" : os.arch() === "x64" ? "x64" : "x86";
+    arch === "arm64" ? "arm64" : arch === "x64" ? "x64" : "x86";
 
   return `${target_os}_${target_cpu}_${target}`;
 }
@@ -88,6 +88,17 @@ export function parseTarget() {
   }
 
   return target;
+}
+
+export function parseArch() {
+  // try to read the desired arch from `--arch <value>`
+  let arch = argv["arch"] ?? os.arch();
+
+  if (!["x64", "x86", "arm64"].includes(arch)) {
+    throw new Error(`Invalid arch: ${arch}`);
+  }
+
+  return arch;
 }
 
 export async function maybeSpinner(title, action) {
