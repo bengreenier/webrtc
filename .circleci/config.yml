@@ -37,7 +37,7 @@ jobs:
   mac_intel_build:
     macos:
       xcode: 14.2.0
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - run: npm ci
@@ -52,7 +52,7 @@ jobs:
   mac_arm_build:
     macos:
       xcode: 14.2.0
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - run: npm ci
