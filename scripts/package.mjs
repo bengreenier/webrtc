@@ -41,7 +41,8 @@ if (process.platform === "win32") {
     );
   });
 } else if (process.platform === "linux") {
-  echo($`ls -alR src/out`);
+  const output = await $`ls -alR src/out`;
+  echo(output);
   throw new Error("Testing");
 } else {
   throw new Error(`Unsupported platform ${process.platform}`);
