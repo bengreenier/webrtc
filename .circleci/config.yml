@@ -27,6 +27,7 @@ jobs:
       - checkout
       - run: npm ci
       - run: npm run bootstrap
+      - run: chmod a+x ./.circleci/install_dependencies_nix.sh
       - run: ./.circleci/install_dependencies_nix.sh
       - run: npm run build -- --target=debug
       - run: npm run build -- --target=release
