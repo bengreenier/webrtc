@@ -36,7 +36,8 @@ jobs:
 
   mac_intel_build:
     macos:
-      xcode: 14.2.0
+      # To give us 100GB of disk
+      xcode: 12.5.1
     resource_class: medium
     steps:
       - checkout
@@ -51,7 +52,8 @@ jobs:
 
   mac_arm_build:
     macos:
-      xcode: 14.2.0
+      # To give us 100GB of disk
+      xcode: 12.5.1
     resource_class: medium
     steps:
       - checkout
