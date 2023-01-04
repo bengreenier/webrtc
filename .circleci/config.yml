@@ -4,7 +4,7 @@ orbs:
   win: circleci/windows@5.0 # The Windows orb gives you everything you need to start using the Windows executor.
 
 jobs:
-  win_build: # name of your job
+  win_build:
     executor:
       name: win/default
       size: xlarge
@@ -19,7 +19,22 @@ jobs:
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
 
+  nix_build:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: 2xlarge
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: ./.circleci/install_dependencies_nix.sh
+      - run: npm run build -- --target=debug
+      - run: npm run build -- --target=release
+      - run: npm run package -- --target=debug
+      - run: npm run package -- --target=release
+
 workflows:
   full_build:
     jobs:
       - win_build
+      - nix_build
