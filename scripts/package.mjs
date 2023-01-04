@@ -41,9 +41,39 @@ if (process.platform === "win32") {
     );
   });
 } else if (process.platform === "linux") {
-  const output = await $`ls -alR src/out`;
-  echo(output);
-  throw new Error("Testing");
+  // TODO(bengreenier): is this enough? look at ninja output to see what obj files are a part of this lib
+  const mainLib = path.join("src", "out", triplet, "obj", "libwebrtc.a");
+  await fs.copy(mainLib, path.join("out", triplet, "libwebrtc.a"));
+
+  const extras = await globby([
+    `src/out/${triplet}/*.so`,
+    `src/out/${triplet}/*.a`,
+  ]);
+
+  // TODO(bengreenier): this is too slow
+  await Promise.all(
+    extras.map((extra) =>
+      fs.copy(extra, path.join("out", triplet, "extras", path.basename(extra)))
+    )
+  );
+
+  // binaries need to be detected by +x permission
+  const allOutput = await fs.readdir(`src/out/${triplet}`);
+  const allOutputWithStats = await Promise.all(
+    allOutput.map((o) =>
+      fs.access(o, fs.constants.X_OK).then(
+        (s) => ({ path: o, executable: true }),
+        () => ({ path: o, executable: false })
+      )
+    )
+  );
+  const binaries = allOutputWithStats.filter((e) => e.executable);
+
+  await Promise.all(
+    binaries.map((extra) =>
+      fs.copy(extra, path.join("out", triplet, "extras", path.basename(extra)))
+    )
+  );
 } else {
   throw new Error(`Unsupported platform ${process.platform}`);
 }
