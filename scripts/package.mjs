@@ -82,6 +82,7 @@ if (process.platform === "win32") {
 
 // headers (cross-platform)
 const excludeList = [
+  ".git",
   "tools",
   "test",
   "example",
@@ -100,7 +101,6 @@ await fs.copy("src/", path.join("out", triplet, "include"), {
 
     return (
       !excludeList.some((excluded) => dir.includes(excluded)) &&
-      src !== ".git" &&
       (isDirectory || ext === ".h")
     );
   },

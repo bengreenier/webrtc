@@ -4,7 +4,7 @@ orbs:
   win: circleci/windows@5.0 # The Windows orb gives you everything you need to start using the Windows executor.
 
 jobs:
-  win_build:
+  win_build_dbg:
     executor:
       name: win/default
       size: xlarge
@@ -15,17 +15,32 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap
       - run: npm run build -- --target=debug
-      - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
-      - run: npm run package -- --target=release
-      - store_artifacts:
-          path: ./vendor/webrtc/out/win_x64_debug
-          destination: win_x64_debug
-      - store_artifacts:
-          path: ./vendor/webrtc/out/win_x64_release
-          destination: win_x64_release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/win_x64_debug/webrtc.lib"
+            - "out/win_x64_debug/extras/"
 
-  nix_build:
+  win_build_rel:
+    executor:
+      name: win/default
+      size: xlarge
+
+    steps:
+      - checkout
+      - run: ./.circleci/install_dependencies_win.ps1
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: npm run build -- --target=release
+      - run: npm run package -- --target=release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/win_x64_release/webrtc.lib"
+            - "out/win_x64_release/extras/"
+
+  nix_build_dbg:
     machine:
       image: ubuntu-2004:current
     resource_class: xlarge
@@ -36,17 +51,36 @@ jobs:
       - run: chmod a+x ./.circleci/install_dependencies_nix.sh
       - run: ./.circleci/install_dependencies_nix.sh
       - run: npm run build -- --target=debug
-      - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
-      - run: npm run package -- --target=release
-      - store_artifacts:
-          path: ./vendor/webrtc/out/linux_x64_debug
-          destination: linux_x64_debug
-      - store_artifacts:
-          path: ./vendor/webrtc/out/linux_x64_release
-          destination: linux_x64_release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/linux_x64_debug/libwebrtc.a"
+            - "out/linux_x64_debug/extras/"
 
-  mac_intel_build:
+  nix_build_rel:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: chmod a+x ./.circleci/install_dependencies_nix.sh
+      - run: ./.circleci/install_dependencies_nix.sh
+      - run: npm run build -- --target=release
+      - run: npm run package -- --target=release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            # We take the headers from linux, since it's our fastest build
+            - "out/linux_x64_release/include"
+            # We take version from linux, for the same reason
+            - "VERSION.txt"
+            - "out/linux_x64_release/libwebrtc.a"
+            - "out/linux_x64_release/extras/"
+
+  mac_intel_build_dbg:
     macos:
       # To give us 100GB of disk
       xcode: 12.5.1
@@ -58,17 +92,33 @@ jobs:
           no_output_timeout: 30m
           command: npm run bootstrap
       - run: npm run build -- --target=debug
-      - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
-      - run: npm run package -- --target=release
-      - store_artifacts:
-          path: ./vendor/webrtc/out/mac_x64_debug
-          destination: mac_x64_debug
-      - store_artifacts:
-          path: ./vendor/webrtc/out/mac_x64_release
-          destination: mac_x64_release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/mac_x64_debug/libwebrtc.a"
+            - "out/mac_x64_debug/extras/"
 
-  mac_arm_build:
+  mac_intel_build_rel:
+    macos:
+      # To give us 100GB of disk
+      xcode: 12.5.1
+    resource_class: medium
+    steps:
+      - checkout
+      - run: npm ci
+      - run:
+          no_output_timeout: 30m
+          command: npm run bootstrap
+      - run: npm run build -- --target=release
+      - run: npm run package -- --target=release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/mac_x64_release/libwebrtc.a"
+            - "out/mac_x64_release/extras/"
+
+  mac_arm_build_dbg:
     macos:
       # To give us 100GB of disk
       xcode: 12.5.1
@@ -80,20 +130,62 @@ jobs:
           no_output_timeout: 30m
           command: npm run bootstrap
       - run: npm run build -- --target=debug --arch=arm64
-      - run: npm run build -- --target=release --arch=arm64
       - run: npm run package -- --target=debug --arch=arm64
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/mac_arm64_debug/libwebrtc.a"
+            - "out/mac_arm64_debug/extras/"
+
+  mac_arm_build_rel:
+    macos:
+      # To give us 100GB of disk
+      xcode: 12.5.1
+    resource_class: medium
+    steps:
+      - checkout
+      - run: npm ci
+      - run:
+          no_output_timeout: 30m
+          command: npm run bootstrap
+      - run: npm run build -- --target=release --arch=arm64
       - run: npm run package -- --target=release --arch=arm64
-      - store_artifacts:
-          path: ./vendor/webrtc/out/mac_arm64_debug
-          destination: mac_arm64_debug
-      - store_artifacts:
-          path: ./vendor/webrtc/out/mac_arm64_release
-          destination: mac_arm64_release
+      - persist_to_workspace:
+          root: ./vendor/webrtc
+          paths:
+            - "out/mac_arm64_release/libwebrtc.a"
+            - "out/mac_arm64_release/extras/"
+
+  gh_release:
+    docker:
+      - image: cibuilds/github:0.13
+    steps:
+      - attach_workspace:
+          at: ./artifacts
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            VERSION=$(cat ./artifacts/VERSION.txt)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
 
 workflows:
   full_build:
     jobs:
-      - win_build
-      - nix_build
-      - mac_intel_build
-      - mac_arm_build
+      - win_build_dbg
+      - win_build_rel
+      - nix_build_dbg
+      - nix_build_rel
+      - mac_intel_build_dbg
+      - mac_intel_build_rel
+      - mac_arm_build_dbg
+      - mac_arm_build_rel
+      - gh_release:
+          requires:
+            - win_build_dbg
+            - win_build_rel
+            - nix_build_dbg
+            - nix_build_rel
+            - mac_intel_build_dbg
+            - mac_intel_build_rel
+            - mac_arm_build_dbg
+            - mac_arm_build_rel
