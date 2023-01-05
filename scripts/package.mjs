@@ -3,6 +3,7 @@ import "zx/globals";
 import {
   createTriplet,
   maybeSpinner,
+  parseArch,
   parseTarget,
   setupPlatform,
   vswhere,
@@ -11,7 +12,8 @@ import {
 const cwd = await setupPlatform();
 
 const target = parseTarget();
-const triplet = createTriplet(target);
+const arch = parseArch();
+const triplet = createTriplet(target, arch);
 
 echo(`Cleaning up ${chalk.green(path.join("out", triplet))}...`);
 await fs.remove(path.join("out", triplet));
@@ -40,7 +42,7 @@ if (process.platform === "win32") {
       )
     );
   });
-} else if (process.platform === "linux") {
+} else if (process.platform === "linux" || process.platform === "darwin") {
   // TODO(bengreenier): is this enough? look at ninja output to see what obj files are a part of this lib
   const mainLib = path.join("src", "out", triplet, "obj", "libwebrtc.a");
   await fs.copy(mainLib, path.join("out", triplet, "libwebrtc.a"));
@@ -74,10 +76,6 @@ if (process.platform === "win32") {
       fs.copy(extra, path.join("out", triplet, "extras", path.basename(extra)))
     )
   );
-} else if (process.platform === "darwin") {
-  const output = await $`ls -alR src/out`;
-  echo(output);
-  throw new Error("Testing");
 } else {
   throw new Error(`Unsupported platform ${process.platform}`);
 }

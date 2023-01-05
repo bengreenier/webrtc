@@ -18,6 +18,12 @@ jobs:
       - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
+      - store_artifacts:
+          path: ./out/win_x64_debug
+          destination: win_x64_debug
+      - store_artifacts:
+          path: ./out/win_x64_release
+          destination: win_x64_release
 
   nix_build:
     machine:
@@ -33,6 +39,12 @@ jobs:
       - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
+      - store_artifacts:
+          path: ./out/linux_x64_debug
+          destination: linux_x64_debug
+      - store_artifacts:
+          path: ./out/linux_x64_release
+          destination: linux_x64_release
 
   mac_intel_build:
     macos:
@@ -49,6 +61,12 @@ jobs:
       - run: npm run build -- --target=release
       - run: npm run package -- --target=debug
       - run: npm run package -- --target=release
+      - store_artifacts:
+          path: ./out/mac_x64_debug
+          destination: mac_x64_debug
+      - store_artifacts:
+          path: ./out/mac_x64_release
+          destination: mac_x64_release
 
   mac_arm_build:
     macos:
@@ -63,8 +81,14 @@ jobs:
           command: npm run bootstrap
       - run: npm run build -- --target=debug --arch=arm64
       - run: npm run build -- --target=release --arch=arm64
-      - run: npm run package -- --target=debug
-      - run: npm run package -- --target=release
+      - run: npm run package -- --target=debug --arch=arm64
+      - run: npm run package -- --target=release --arch=arm64
+      - store_artifacts:
+          path: ./out/mac_arm64_debug
+          destination: mac_arm64_debug
+      - store_artifacts:
+          path: ./out/mac_arm64_release
+          destination: mac_arm64_release
 
 workflows:
   full_build:
