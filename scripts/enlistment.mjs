@@ -112,7 +112,10 @@ if (process.platform === "win32") {
     // this is obtuse, i'm aware. here's what the command looks like:
     // cd ./src; git apply /real/path/to/patches/src/fullscreen-win-application-include.patch
     await Promise.all(
-      patches.map((patch) => $`cd .${patch.repo}; git apply ${patch.path}`)
+      patches.map(
+        (patch) =>
+          $`cd .${patch.repo}; git apply --whitespace=warn ${patch.path}`
+      )
     );
   });
 
