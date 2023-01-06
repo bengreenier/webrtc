@@ -114,7 +114,7 @@ if (process.platform === "win32") {
     await Promise.all(
       patches.map(
         (patch) =>
-          $`cd .${patch.repo}; git apply --whitespace=warn ${patch.path}`
+          $`cd .${patch.repo}; git apply --verbose --whitespace=fix ${patch.path}`
       )
     );
   });
