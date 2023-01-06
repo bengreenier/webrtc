@@ -163,14 +163,57 @@ jobs:
   gh_release:
     docker:
       - image: cibuilds/github:0.13
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ./artifacts
       - run:
           name: "Publish Release on GitHub"
+          # Re-lays out the artifacts so that we get reasonable platform zips on the GH release
+          # Note: GHR doesn't recurse, which is why we don't delete the folders after zip creation
           command: |
             VERSION=$(cat ./artifacts/VERSION.txt)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+            cp ./artifacts/VERSION.txt ./artifacts/out/
+            cd ./artifacts/out/
+            mv ./linux_x64_release/include ./include
+            mkdir $VERSION-win-x64
+            mkdir $VERSION-win-x64-extras
+            mv ./win_x64_release ./$VERSION-win-x64/release
+            mv ./win_x64_debug ./$VERSION-win-x64/debug
+            mv ./$VERSION-win-x64/release/extras ./$VERSION-win-x64-extras
+            rm -rf ./$VERSION-win-x64/debug/extras
+            cp -R ./include ./$VERSION-win-x64/include
+            mkdir $VERSION-linux-x64
+            mkdir $VERSION-linux-x64-extras
+            mv ./linux_x64_release ./$VERSION-linux-x64/release
+            mv ./linux_x64_debug ./$VERSION-linux-x64/debug
+            mv ./$VERSION-linux-x64/release/extras ./$VERSION-linux-x64-extras
+            rm -rf ./$VERSION-linux-x64/debug/extras
+            cp -R ./include ./$VERSION-linux-x64/include
+            mkdir $VERSION-darwin-x64
+            mkdir $VERSION-darwin-x64-extras
+            mv ./mac_x64_release ./$VERSION-darwin-x64/release
+            mv ./mac_x64_debug ./$VERSION-darwin-x64/debug
+            mv ./$VERSION-darwin-x64/release/extras ./$VERSION-darwin-x64-extras
+            rm -rf ./$VERSION-darwin-x64/debug/extras
+            cp -R ./include ./$VERSION-darwin-x64/include
+            mkdir $VERSION-darwin-arm64
+            mkdir $VERSION-darwin-arm64-extras
+            mv ./mac_arm64_release ./$VERSION-darwin-arm64/release
+            mv ./mac_arm64_debug ./$VERSION-darwin-arm64/debug
+            mv ./$VERSION-darwin-arm64/release/extras ./$VERSION-darwin-arm64-extras
+            rm -rf ./$VERSION-darwin-arm64/debug/extras
+            cp -R ./include ./$VERSION-darwin-arm64/include
+            rm -rf ./include
+            zip -r $VERSION-darwin-arm64.zip $VERSION-darwin-arm64/
+            zip -r $VERSION-darwin-arm64-extras.zip $VERSION-darwin-arm64-extras/
+            zip -r $VERSION-darwin-x64.zip $VERSION-darwin-x64/
+            zip -r $VERSION-darwin-x64-extras.zip $VERSION-darwin-x64-extras/
+            zip -r $VERSION-linux-x64.zip $VERSION-linux-x64/
+            zip -r $VERSION-linux-x64-extras.zip $VERSION-linux-x64-extras/
+            zip -r $VERSION-win-x64.zip $VERSION-win-x64/
+            zip -r $VERSION-win-x64-extras.zip $VERSION-win-x64-extras/
+            ghr -t "${GITHUB_TOKEN}" -u "${CIRCLE_PROJECT_USERNAME}" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -replace $VERSION ./
 
 workflows:
   full_build:
