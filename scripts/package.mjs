@@ -63,13 +63,24 @@ if (process.platform === "win32") {
   const allOutput = await fs.readdir(`src/out/${triplet}`);
   const allOutputWithStats = await Promise.all(
     allOutput.map((o) =>
-      fs.access(o, fs.constants.X_OK).then(
-        (s) => ({ path: o, executable: true }),
-        () => ({ path: o, executable: false })
-      )
+      fs.stat(`src/out/${triplet}/${o}`).then((stats) => {
+        if (stats.isDirectory()) {
+          return { path: o, executable: false };
+        } else {
+          return fs.access(`src/out/${triplet}/${o}`, fs.constants.X_OK).then(
+            () => ({ path: o, executable: true }),
+            (e) => ({ path: o, executable: false })
+          );
+        }
+      })
     )
   );
-  const binaries = allOutputWithStats.filter((e) => e.executable);
+
+  const binaries = allOutputWithStats
+    .filter((e) => e.executable)
+    .map((e) => `src/out/${triplet}/${e.path}`);
+
+  console.log(binaries);
 
   await Promise.all(
     binaries.map((extra) =>
