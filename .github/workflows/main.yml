@@ -21,6 +21,7 @@ jobs:
       - run: echo ${{ steps.get_webrtc_version.outputs.version }}
       - id: get_latest_build
         run: |
+          git fetch --all --tags
           LATEST_TAG=$(git tag --sort=committerdate | tail -1)
           echo $LATEST_TAG
           echo release=$LATEST_TAG >> $GITHUB_OUTPUT
