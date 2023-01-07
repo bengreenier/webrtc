@@ -8,6 +8,8 @@ jobs:
   check_releases:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout_source
+        uses: actions/checkout@v3.3.0
       - name: get_webrtc_version
         run: |
           WEBRTC_VERSION=$(npm run scripts:latest_release)
