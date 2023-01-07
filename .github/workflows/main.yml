@@ -43,7 +43,11 @@ jobs:
           else
             echo should_build=true >> $GITHUB_OUTPUT
           fi
-      - uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.0.5
+      - uses: promiseofcake/circleci-trigger-action@v1
         if: ${{ steps.version_comparison.outputs.should_build == 'true' }}
+        with:
+          user-token: ${{ secrets.CCI_TOKEN }}
+          project-slug: promiseofcake/circleci-trigger-action
+          branch: main
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
