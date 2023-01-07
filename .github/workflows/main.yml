@@ -14,15 +14,15 @@ jobs:
         run: npm ci
       - name: get_webrtc_version
         run: |
-          WEBRTC_VERSION=$(npm run scripts:latest_release)
+          # Can't use the npm alias cause NPM writes output
+          WEBRTC_VERSION=$(node ./scripts/latest_release.mjs)
           echo $WEBRTC_VERSION
           echo version=$WEBRTC_VERSION >> $GITHUB_OUTPUT
       - run: echo ${{ steps.get_webrtc_version.outputs.version }}
       - name: get_latest_build
         uses: pozetroninc/github-action-get-latest-release@v0.5.0
         with:
-          owner: bengreenier
-          repo: webrtc
+          repository: ${{ github.repository }}
           excludes: prerelease, draft
       - run: echo ${{ steps.get_latest_build.outputs.id }}
       - name: version_comparision
