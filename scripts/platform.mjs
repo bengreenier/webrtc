@@ -35,6 +35,26 @@ export async function setupPlatform() {
   return webrtcDirectory;
 }
 
+export async function getLatestRTC() {
+  const res = await fetch(
+    `https://chromiumdash.appspot.com/fetch_milestones?only_branched=true`
+  );
+  const json = await res.json();
+
+  const data = json.sort((a, b) => {
+    b.milestone - a.milestone;
+  });
+
+  const stable = data.find(
+    (milestone) =>
+      milestone["schedule_active"] === true &&
+      milestone["schedule_phase"] === "stable"
+  );
+  const { milestone, webrtc_branch } = stable;
+
+  return { milestone, webrtc_branch };
+}
+
 /**
  * Run vswhere to determine the path to vs tools.
  * @returns - the tools bin directory path

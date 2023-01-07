@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Cross-platform builds of WebRTC",
   "scripts": {
+    "scripts:latest_release": "node ./scripts/latest_release.mjs",
     "scripts:depot_tools": "node ./scripts/depot_tools.mjs",
     "scripts:enlistment": "node ./scripts/enlistment.mjs",
     "scripts:build": "node ./scripts/build.mjs",
