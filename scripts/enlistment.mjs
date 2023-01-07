@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 import "zx/globals";
-import { setupPlatform, maybeSpinner } from "./platform.mjs";
+import { setupPlatform, getLatestRTC, maybeSpinner } from "./platform.mjs";
 
 const cwd = await setupPlatform();
 
@@ -10,21 +10,7 @@ let version = argv["version"];
 // obtain the latest version
 if (!version) {
   await maybeSpinner("Obtaining latest version...", async () => {
-    const res = await fetch(
-      `https://chromiumdash.appspot.com/fetch_milestones?only_branched=true`
-    );
-    const json = await res.json();
-
-    const data = json.sort((a, b) => {
-      b.milestone - a.milestone;
-    });
-
-    const stable = data.find(
-      (milestone) =>
-        milestone["schedule_active"] === true &&
-        milestone["schedule_phase"] === "stable"
-    );
-    const { milestone, webrtc_branch } = stable;
+    const { milestone, webrtc_branch } = await getLatestRTC();
 
     version = webrtc_branch;
     echo(`Using ${version} (from chromium ${milestone})`);
