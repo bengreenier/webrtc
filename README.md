@@ -2,6 +2,9 @@
 
 Prebuilt WebRTC binaries for Windows, Mac, and Linux. 🏗️🪄
 
+[![GitHub Release Date](https://img.shields.io/github/release-date/bengreenier/webrtc?style=flat-square)](https://github.com/bengreenier/webrtc/releases/latest)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/bengreenier/webrtc?style=flat-square)](https://github.com/bengreenier/webrtc/releases/latest)
+
 ![WebRTC Logo](./.github/assets/webrtc_logo.png)
 
 I've been working with WebRTC for years; but it's always been a pain to build libraries for various modern desktop platforms.
@@ -16,6 +19,8 @@ Anyway, I finally got around to setting this up myself, using CircleCI to produc
 __Both debug and release artifacts are produced__, and I've also packed up the various WebRTC tools and tests in seperate zips. 
 
 ## Getting Started
+
+Our releases are named after the WebRTC branch that we built; To determine the latest (stable, beta, etc) WebRTC branch, see [this Chromium dashboard](https://chromiumdash.appspot.com/branches).
 
 ### Windows
 
