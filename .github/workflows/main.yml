@@ -20,12 +20,11 @@ jobs:
           echo version=$WEBRTC_VERSION >> $GITHUB_OUTPUT
       - run: echo ${{ steps.get_webrtc_version.outputs.version }}
       - id: get_latest_build
-        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        uses: rez0n/actions-github-release@v1.8
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          excludes: prerelease, draft
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          type: "stable"
       - run: echo ${{ steps.get_latest_build.outputs.release }}
       - id: version_comparison
         run: |
