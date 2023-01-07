@@ -1,34 +1,49 @@
 name: Check WebRTC Releases
 on:
   schedule:
-  - cron: "0 12 * * 6"
+    - cron: "0 12 * * 6"
   workflow_dispatch:
-  
+
 jobs:
   check_releases:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout_source
+      - id: checkout_source
         uses: actions/checkout@v3.3.0
-      - name: install_deps
+      - id: install_deps
         run: npm ci
-      - name: get_webrtc_version
+      - id: get_webrtc_version
         run: |
           # Can't use the npm alias cause NPM writes output
           WEBRTC_VERSION=$(node ./scripts/latest_release.mjs)
           echo $WEBRTC_VERSION
           echo version=$WEBRTC_VERSION >> $GITHUB_OUTPUT
       - run: echo ${{ steps.get_webrtc_version.outputs.version }}
-      - name: get_latest_build
+      - id: get_latest_build
         uses: pozetroninc/github-action-get-latest-release@v0.5.0
         with:
           repository: ${{ github.repository }}
           excludes: prerelease, draft
       - run: echo ${{ steps.get_latest_build.outputs.id }}
-      - name: version_comparision
+      - id: version_comparison
         run: |
-          echo should_build=false >> $GITHUB_OUTPUT
+          if [ -z "${{ steps.get_webrtc_version.outputs.version }}" ]
+          then
+            exit 1
+          fi
+
+          if [ -z "${{ steps.get_latest_build.outputs.release }}" ]
+          then
+            exit 1
+          fi
+
+          if [ "${{ steps.get_webrtc_version.outputs.version }}" = "${{ steps.get_latest_build.outputs.release }}" ]
+          then
+            echo should_build=false >> $GITHUB_OUTPUT
+          else
+            echo should_build=true >> $GITHUB_OUTPUT
+          fi
       - uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.0.5
-        if: ${{ steps.version_comparision.outputs.should_build }}
+        if: ${{ steps.version_comparison.outputs.should_build == 'true' }}
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
