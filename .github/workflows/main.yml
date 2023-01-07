@@ -20,11 +20,10 @@ jobs:
           echo version=$WEBRTC_VERSION >> $GITHUB_OUTPUT
       - run: echo ${{ steps.get_webrtc_version.outputs.version }}
       - id: get_latest_build
-        uses: rez0n/actions-github-release@v1.8
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          type: "stable"
+        run: |
+          LATEST_TAG=$(git tag --sort=committerdate | tail -1)
+          echo $LATEST_TAG
+          echo release=$LATEST_TAG >> $GITHUB_OUTPUT
       - run: echo ${{ steps.get_latest_build.outputs.release }}
       - id: version_comparison
         run: |
