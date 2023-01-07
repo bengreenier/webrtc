@@ -26,7 +26,7 @@ jobs:
           excludes: prerelease, draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: echo ${{ steps.get_latest_build.outputs.id }}
+      - run: echo ${{ steps.get_latest_build.outputs.release }}
       - id: version_comparison
         run: |
           if [ -z "${{ steps.get_webrtc_version.outputs.version }}" ]
@@ -49,7 +49,5 @@ jobs:
         if: ${{ steps.version_comparison.outputs.should_build == 'true' }}
         with:
           user-token: ${{ secrets.CCI_TOKEN }}
-          project-slug: promiseofcake/circleci-trigger-action
+          project-slug: bengreenier/webrtc
           branch: main
-        env:
-          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
