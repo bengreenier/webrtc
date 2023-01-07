@@ -1,17 +1,4 @@
 version: 2.1 # Use version 2.1 to enable Orb usage.
-parameters:
-  GHA_Actor:
-    type: string
-    default: ""
-  GHA_Action:
-    type: string
-    default: ""
-  GHA_Event:
-    type: string
-    default: ""
-  GHA_Meta:
-    type: string
-    default: ""
 
 orbs:
   win: circleci/windows@5.0 # The Windows orb gives you everything you need to start using the Windows executor.
@@ -230,8 +217,8 @@ jobs:
 
 workflows:
   full_build:
-    # Only execute when explicitly triggered by GH action (not on commit)
-    when: << pipeline.parameters.GHA_Action >>
+    when: # only execute when triggered by the api
+      equal: [<< pipeline.trigger_source >>, api]
     jobs:
       - win_build_dbg
       - win_build_rel
