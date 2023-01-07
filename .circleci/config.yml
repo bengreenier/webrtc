@@ -217,6 +217,8 @@ jobs:
 
 workflows:
   full_build:
+    when: # only execute when triggered by the api
+      equal: [<< pipeline.trigger_source >>, api]
     jobs:
       - win_build_dbg
       - win_build_rel
