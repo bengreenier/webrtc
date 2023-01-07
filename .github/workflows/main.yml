@@ -40,7 +40,7 @@ jobs:
 
           if [ "${{ steps.get_webrtc_version.outputs.version }}" = "${{ steps.get_latest_build.outputs.release }}" ]
           then
-            echo should_build=true >> $GITHUB_OUTPUT
+            echo should_build=false >> $GITHUB_OUTPUT
           else
             echo should_build=true >> $GITHUB_OUTPUT
           fi
