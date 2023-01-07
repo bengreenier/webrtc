@@ -24,6 +24,8 @@ jobs:
         with:
           repository: ${{ github.repository }}
           excludes: prerelease, draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: echo ${{ steps.get_latest_build.outputs.id }}
       - id: version_comparison
         run: |
