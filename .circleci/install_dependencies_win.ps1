@@ -12,6 +12,8 @@ Write-Output "Downloading VS"
 (New-Object Net.WebClient).DownloadFile("https://aka.ms/vs/17/release/vs_buildtools.exe", "$env:TEMP\vs_buildtools.exe")
 Write-Output "Installing SDK"
 Start-Process -FilePath "$env:TEMP\sdk_install.exe" -ArgumentList "/features + /quiet /norestart" -Wait
+Write-Output "Uninstalling Chocolately node"
+Start-Process -FilePath "choco" -ArgumentList "uninstall nodejs -y -x" -Wait
 Write-Output "Installing Node"
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $env:TEMP\node-install.msi /qn ADDLOCAL=ALL" -Wait
 Write-Output "Installing VS"
