@@ -1,11 +1,11 @@
 diff --git a/modules/rtp_rtcp/source/source_tracker_unittest.cc b/modules/rtp_rtcp/source/source_tracker_unittest.cc
-index b3e3102d7e..a00fb83a16 100644
+index c11142bcb4..efd6ebec7a 100644
 --- a/modules/rtp_rtcp/source/source_tracker_unittest.cc
 +++ b/modules/rtp_rtcp/source/source_tracker_unittest.cc
-@@ -283,14 +283,15 @@ TEST(SourceTrackerTest, OnFrameDeliveredRecordsSourcesDistinctSsrcs) {
+@@ -286,14 +286,14 @@ TEST(SourceTrackerTest, OnFrameDeliveredRecordsSourcesDistinctSsrcs) {
             .set_local_capture_clock_offset(kLocalCaptureClockOffset)}));
  
-   int64_t timestamp_ms = clock.TimeInMilliseconds();
+   Timestamp timestamp = time_controller.GetClock()->CurrentTime();
 -  constexpr RtpSource::Extensions extensions0 = {
 -      .audio_level = kAudioLevel0,
 -      .absolute_capture_time = kAbsoluteCaptureTime,
@@ -18,18 +18,17 @@ index b3e3102d7e..a00fb83a16 100644
 +  extensions0.audio_level = kAudioLevel0;
 +  extensions0.absolute_capture_time = kAbsoluteCaptureTime;
 +  extensions0.local_capture_clock_offset = kLocalCaptureClockOffset;
-+  
 +  RtpSource::Extensions extensions1;
 +  extensions1.audio_level = kAudioLevel1;
 +  extensions1.absolute_capture_time = kAbsoluteCaptureTime;
 +  extensions1.local_capture_clock_offset = kLocalCaptureClockOffset;
  
-   EXPECT_THAT(tracker.GetSources(),
-               ElementsAre(RtpSource(timestamp_ms, kSsrc2, RtpSourceType::SSRC,
-@@ -343,18 +344,21 @@ TEST(SourceTrackerTest, OnFrameDeliveredRecordsSourcesSameSsrc) {
-   }));
+   time_controller.AdvanceTime(TimeDelta::Zero());
  
-   int64_t timestamp_ms = clock.TimeInMilliseconds();
+@@ -350,18 +350,18 @@ TEST(SourceTrackerTest, OnFrameDeliveredRecordsSourcesSameSsrc) {
+ 
+   time_controller.AdvanceTime(TimeDelta::Zero());
+   Timestamp timestamp = time_controller.GetClock()->CurrentTime();
 -  constexpr RtpSource::Extensions extensions0 = {
 -      .audio_level = kAudioLevel0,
 -      .absolute_capture_time = kAbsoluteCaptureTime,
@@ -46,21 +45,18 @@ index b3e3102d7e..a00fb83a16 100644
 +  extensions0.audio_level = kAudioLevel0;
 +  extensions0.absolute_capture_time = kAbsoluteCaptureTime;
 +  extensions0.local_capture_clock_offset = kLocalCaptureClockOffset;
-+  
 +  RtpSource::Extensions extensions1;
 +  extensions1.audio_level = kAudioLevel1;
 +  extensions1.absolute_capture_time = kAbsoluteCaptureTime;
 +  extensions1.local_capture_clock_offset = kLocalCaptureClockOffset;
-+  
 +  RtpSource::Extensions extensions2;
 +  extensions2.audio_level = kAudioLevel2;
 +  extensions2.absolute_capture_time = kAbsoluteCaptureTime;
 +  extensions2.local_capture_clock_offset = kLocalCaptureClockOffset;
-+  
  
-   EXPECT_THAT(tracker.GetSources(),
-               ElementsAre(RtpSource(timestamp_ms, kSsrc, RtpSourceType::SSRC,
-@@ -395,18 +399,20 @@ TEST(SourceTrackerTest, OnFrameDeliveredUpdatesSources) {
+   EXPECT_THAT(
+       tracker.GetSources(),
+@@ -403,18 +403,18 @@ TEST(SourceTrackerTest, OnFrameDeliveredUpdatesSources) {
    constexpr Timestamp kReceiveTime1 = Timestamp::Millis(61);
    constexpr Timestamp kReceiveTime2 = Timestamp::Millis(62);
  
@@ -80,22 +76,20 @@ index b3e3102d7e..a00fb83a16 100644
 +  extensions0.audio_level = kAudioLevel0;
 +  extensions0.absolute_capture_time = kAbsoluteCaptureTime0;
 +  extensions0.local_capture_clock_offset = kLocalCaptureClockOffset0;
-+
 +  RtpSource::Extensions extensions1;
 +  extensions1.audio_level = kAudioLevel1;
 +  extensions1.absolute_capture_time = kAbsoluteCaptureTime1;
 +  extensions1.local_capture_clock_offset = kLocalCaptureClockOffset1;
-+  
 +  RtpSource::Extensions extensions2;
 +  extensions2.audio_level = kAudioLevel2;
 +  extensions2.absolute_capture_time = kAbsoluteCaptureTime2;
 +  extensions2.local_capture_clock_offset = kLocalCaptureClockOffset2;
  
-   SimulatedClock clock(1000000000000ULL);
-   SourceTracker tracker(&clock);
-@@ -515,10 +521,10 @@ TEST(SourceTrackerTest, TimedOutSourcesAreRemoved) {
+   GlobalSimulatedTimeController time_controller(Timestamp::Seconds(1000));
+   SourceTracker tracker(time_controller.GetClock());
+@@ -526,10 +526,10 @@ TEST(SourceTrackerTest, TimedOutSourcesAreRemoved) {
  
-   clock.AdvanceTimeMilliseconds(SourceTracker::kTimeoutMs);
+   time_controller.AdvanceTime(SourceTracker::kTimeout);
  
 -  constexpr RtpSource::Extensions extensions1 = {
 -      .audio_level = kAudioLevel1,
