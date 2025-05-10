@@ -1,0 +1,8 @@
+CompileFlags:
+  CompilationDatabase: /
+  Add:
+    - --include-directory=vendor/webrtc
+    - --include-directory=vendor/webrtc/include/third_party/abseil-cpp
+Diagnostics:
+  MissingIncludes: Strict
+  UnusedIncludes: None

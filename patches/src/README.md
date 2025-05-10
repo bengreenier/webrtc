@@ -1,13 +1,5 @@
 ## Src Patches
 
-### source-tracker-test-nonconstexpr.patch
+### rtc_stats_unittest.patch
 
-> As this is test only, didn't investigate much. Just made 'em non-const.
-
-Workaround for abs::optional_data ctor not being detected as const.
-
-### ip-address-test-unused-consts.patch
-
-> As this is test only, didn't investigate much. Just added a compiler directive.
-
-Workaround for unused consts.
+[Workaround](https://stackoverflow.com/a/53581769) for clang `[[nodiscard]]` decorator on something we actually wish to discard.

@@ -17,10 +17,9 @@ cd("src");
 
 let args = `is_debug=${target === "debug"}`;
 
-// on windows, we need to patch and disable libcxx, so we can use msvc crt as a consumer
+// on windows, we need to disable libcxx, so we can use msvc crt as a consumer
 if (process.platform === "win32") {
-  // TODO(bengreenier): apply patches too!
-  args += ` use_custom_libcxx=false libcxx_is_shared=true enable_iterator_debugging=false`;
+  args += ` use_custom_libcxx=false libcxx_is_shared=true enable_iterator_debugging=false rtc_enable_win_wgc=true`;
 }
 
 const triplet = createTriplet(target, arch);

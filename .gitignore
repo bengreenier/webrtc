@@ -1,2 +1,11 @@
 node_modules/
 vendor/
+
+# Some settings I use aren't portable - notably the following must be set for clangd code completion, but is (obviously) target specific
+# See https://github.com/clangd/clangd/issues/1038 for why we need to do this, otherwise we'd just use `--include-path` and be done with it
+#
+# "clangd.arguments": [
+#   "--compile-commands-dir=vendor/webrtc/src/out/win_x64_debug"
+# ]
+#
+.vscode/
